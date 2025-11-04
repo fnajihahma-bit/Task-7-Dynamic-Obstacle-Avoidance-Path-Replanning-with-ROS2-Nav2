@@ -1,6 +1,134 @@
 # Task-7-Dynamic-Obstacle-Avoidance-Path-Replanning-with-ROS2-Nav2
 Dynamic Obstacles in Robotics
+----
+## Prepare Obstacles Model:
 
+### Step 1. Verify model path
+
+Run this:
+
+```bash
+ls ~/gazebo_models
+```
+If you don’t see a folder named box, or if it’s empty, you must create or download the model.
+
+A proper Gazebo model folder structure looks like:
+
+```arduino
+~/gazebo_models/box/
+├── model.config
+└── model.sdf
+```
+If you don’t have it, create one manually.
+
+### Step 2. Create a simple box model (works in any Gazebo)
+
+
+```bash
+mkdir -p ~/gazebo_models/box
+cd ~/gazebo_models/box
+```
+Now create a file named model.sdf:
+
+```bash
+nano model.sdf
+```
+Paste this minimal model definition:
+
+```xml
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="box">
+    <static>false</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.5 0.5 0.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.5 0.5 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
+```
+Save and exit (Ctrl+O, Enter, Ctrl+X).
+
+Then add the model config file:
+
+```bash
+nano model.config
+```
+
+Paste:
+
+```xml
+<?xml version="1.0"?>
+<model>
+  <name>box</name>
+  <version>1.0</version>
+  <sdf version="1.6">model.sdf</sdf>
+  <author>
+    <name>Student</name>
+  </author>
+  <description>Simple red box obstacle</description>
+</model>
+```
+Save and exit (Ctrl+O, Enter, Ctrl+X).
+
+
+### Step 3. Test that Gazebo can find your model
+
+Make sure Gazebo knows where your models live:
+
+```bash
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/gazebo_models
+```
+
+(Optional: add that line to ~/.bashrc)
+
+Verify again:
+
+```bash
+ls ~/gazebo_models/box/model.sdf
+```
+
+### Step 4. Try spawning again
+
+
+```bash
+source ~/.bashrc
+
+
+ros2 run gazebo_ros spawn_entity.py \
+  -entity box \
+  -file ~/gazebo_models/box/model.sdf \
+  -x 1.5 -y 0.5 -z 0.25
+```
+
+✅ Output:
+```markdown
+[INFO] [spawn_entity]: Spawn Entity started
+[INFO] [spawn_entity]: Loading entity XML from file /home/.../box/model.sdf
+[INFO] [spawn_entity]: Waiting for service /spawn_entity, timeout = 30
+[INFO] [spawn_entity]: Calling service /spawn_entity
+[INFO] [spawn_entity]: Successfully spawned entity [box]
+```
+And in Gazebo, a red cube will appear at coordinates (1.5, 0.5, 0.25).
+
+
+----
 ## Gazebo Simulation
 Start here after Task 6 Step 7 (Nav2 + AMCL + Waypoint follower running and robot moving).
 
